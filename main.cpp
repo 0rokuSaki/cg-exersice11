@@ -17,24 +17,29 @@
 
 /* STL */
 #include <iostream>
+#include <string>
 #include <math.h>
 
 /* Window constants */
-#define WINDOW_X_OFFSET 100
-#define WINDOW_Y_OFFSET 100
-#define WINDOW_HEIGHT   500
-#define WINDOW_WIDTH    500
-#define WINDOW_TITLE    "CG Maman 11"
-#define X_COORD_RNG     100.0
-#define Y_COORD_RNG     100.0
+#define WINDOW_X_OFFSET 100            // Initial window left-offset
+#define WINDOW_Y_OFFSET 100            // Initial window top-offset
+#define WINDOW_HEIGHT   500            // Initial window height
+#define WINDOW_WIDTH    500            // Initial window width
+#define WINDOW_TITLE    "CG Maman 11"  // Window title
+#define X_COORD_RNG     100.0          // Max value for x coord
+#define Y_COORD_RNG     100.0          // Max value for y coord
+
+/* Exit button constants */
+#define EXIT_BTN_HEIGHT            10.0    // Exit button height
+#define EXIT_BTN_WIDTH             20.0    // Exit button width
+#define EXIT_BTN_TEXT_RASTER_POS_X 3.0     // Exit button text x coord
+#define EXIT_BTN_TEXT_RASTER_POS_Y 3.0     // Exit button text y coord
+#define EXIT_BTN_TEXT              "EXIT"  // Exit button text
 
 
-/**
- * Creates and initializes GLUT display-window.
- * 
- * \param argc Argument count.
- * \param argv Argument vector.
- */
+/* HELPER FUNCTIONS */
+
+/* Creates and initializes GLUT display-window */
 void createWindow(int argc, char** argv)
 {
     /* Create the window */
@@ -51,30 +56,61 @@ void createWindow(int argc, char** argv)
 }
 
 
-/* Callback functions */
-void display(void)
+/* Creates an exit button at the bottom left of the window */
+void createExitButton(void)
+{
+    /* Create red rectangle at the bottom left */
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glRectf(0.0f, 0.0f, EXIT_BTN_WIDTH, EXIT_BTN_HEIGHT);
+
+    /* Add text to button */
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRasterPos2f(EXIT_BTN_TEXT_RASTER_POS_X, EXIT_BTN_TEXT_RASTER_POS_Y);
+    for (char c : EXIT_BTN_TEXT)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+    }
+}
+
+
+/* CALLBACK FUNCTIONS */
+
+/* Callback for 'glutDisplayFunc' */
+void displayCallback(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-
+    createExitButton();
     glFlush();
 }
 
-/**
- * Assigns callback functions for events.
- * 
- */
-void registerCallbacks(void)
+
+/* Callback for 'glutMouseFunc' */
+void mouseCallback(int button, int state, int _x, int _y)
 {
-    glutDisplayFunc(display);
+    /* Transform mouse coordinates to Ortho 2D coordinates */
+    const long long windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+    const double x = _x * X_COORD_RNG / glutGet(GLUT_WINDOW_WIDTH);
+    const double y = (windowHeight - _y) * Y_COORD_RNG / windowHeight;
+
+    /* Exit program if right click on exit button */
+    if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN &&
+        x <= EXIT_BTN_WIDTH && y <= EXIT_BTN_HEIGHT)
+    {
+        glutDestroyWindow(1);
+        exit(0);
+    }
 }
 
-/**
- * Main function.
- * 
- * \param argc Argument count.
- * \param argv Argument vector.
- * \return 
- */
+
+/* Assigns callback functions for events */
+void registerCallbacks(void)
+{
+    glutDisplayFunc(displayCallback);
+    glutMouseFunc(mouseCallback);
+}
+
+
+/* Main function */
 int main(int argc, char** argv)
 {
     createWindow(argc, argv);  // Create the display-window
