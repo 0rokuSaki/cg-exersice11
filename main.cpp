@@ -2,6 +2,8 @@
  * \file   main.cpp
  * \brief  My solution for exersice ('Maman') 11 in Computer Graphics (20562) course
  * 
+ * This program creates an ugly logo for the Open University of Israel.
+ * 
  * *** BUILD INSTRUCTIONS (VS2022, Windows 11) ***
  * 1. Setup OpenGL: https://www.geeksforgeeks.org/how-to-setup-opengl-with-visual-studio-2019-on-windows-10/.
  * 2. Select x86 Debug configuration.
@@ -11,6 +13,9 @@
  * \date   March 2023
  *********************************************************************/
 
+/* Include cmath constants */
+#define _USE_MATH_DEFINES
+
 /* OpenGL */
 #include <Windows.h>
 #include <GL/glut.h>
@@ -18,17 +23,17 @@
 /* STL */
 #include <iostream>
 #include <string>
-#include <math.h>
+#include <cmath>
 
 
 /* Window constants */
-#define WINDOW_X_OFFSET 100u           // Initial window left-offset
-#define WINDOW_Y_OFFSET 100u           // Initial window top-offset
-#define WINDOW_HEIGHT   500u           // Initial window height
-#define WINDOW_WIDTH    500u           // Initial window width
+#define WINDOW_X_OFFSET   100u         // Initial window left-offset
+#define WINDOW_Y_OFFSET   100u         // Initial window top-offset
+#define WINDOW_HEIGHT     500u         // Initial window height
+#define WINDOW_WIDTH      500u         // Initial window width
+#define WINDOW_MIN_HEIGHT 375u         // Minimal window height
+#define WINDOW_MIN_WIDTH  350u         // Minimal window width
 #define WINDOW_TITLE    "CG Maman 11"  // Window title
-#define X_COORD_RNG     100.0f         // Max value for x coord
-#define Y_COORD_RNG     100.0f         // Max value for y coord
 
 /* Exit button constants */
 #define EXIT_BTN_WIDTH       85u     // Exit button  width (pixel)
@@ -50,11 +55,24 @@
 #define TITLE_FRAME_WIDTH  3.0f                    // Title frame width
 
 /* Logo constants */
-#define LOGO_LINE1_X 30.0f
-#define LOGO_LINE2_X 70.0f
-#define LOGO_LINE_Y1 40.0f
-#define LOGO_LINE_Y2 70.0f
-#define LOGO_TEXT    "OpenU"
+#define LOGO_WIDTH        280u
+#define LOGO_HEIGHT       200u
+#define LOGO_MIN_COORD   -5.0f
+#define LOGO_MAX_COORD    5.0f
+#define LOGO_FRAME_WIDTH  5.0f
+#define LOGO_LINE1_X     -4.0f
+#define LOGO_LINE2_X      4.0f
+#define LOGO_LINE_Y1     -3.0f
+#define LOGO_LINE_Y2      3.0f
+#define LOGO_LOOP_STEP    0.1f
+#define LOGO_SIN_OFFSET   3.6f
+#define LOGO_COS_OFFSET  -3.6f
+#define LOGO_TEXT1        "The Open University"
+#define LOGO_TEXT2        "of Israel"
+#define LOGO_TEXT_POS_X1  -3.75f
+#define LOGO_TEXT_POS_Y1   0.75f
+#define LOGO_TEXT_POS_X2  -1.5f
+#define LOGO_TEXT_POS_Y2  -1.25f
 
 
 /* HELPER FUNCTIONS */
@@ -71,11 +89,10 @@ void createWindow(int argc, char** argv)
 
     /* Initialize the window */
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f);  // Set window color to white
-    glMatrixMode(GL_PROJECTION);           // Set projection parameters
-    gluOrtho2D(0.0, X_COORD_RNG, 0.0, Y_COORD_RNG);
 }
 
 
+/* Create a frame */
 void createFrame(const int width, const int height, const int frameWidth)
 {
     glLineWidth(frameWidth);
@@ -155,10 +172,14 @@ void displayLogo(void)
     const int windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
     
     /* Create a viewport at the center of the window */
-    glViewport(windowWidth / 4, windowHeight / 4, windowWidth / 2, windowHeight / 2);
+    glViewport(windowWidth / 4, windowHeight / 4, LOGO_WIDTH, LOGO_HEIGHT);
+    glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(LOGO_MIN_COORD, LOGO_MAX_COORD, LOGO_MIN_COORD, LOGO_MAX_COORD);
 
     /* Draw a blue logo of OpenU */
-    glColor3f(0.0f, 0.0f, 0.8f);
+    glColor3f(0.0f, 0.8f, 1.0f);
+    glLineWidth(LOGO_FRAME_WIDTH);
     glBegin(GL_LINES);
         glVertex2f(LOGO_LINE1_X, LOGO_LINE_Y1);
         glVertex2f(LOGO_LINE1_X, LOGO_LINE_Y2);
@@ -168,6 +189,36 @@ void displayLogo(void)
         glVertex2f(LOGO_LINE2_X, LOGO_LINE_Y1);
         glVertex2f(LOGO_LINE2_X, LOGO_LINE_Y2);
     glEnd();
+
+    float x, y;
+    glBegin(GL_LINE_STRIP);
+    for (x = LOGO_MIN_COORD + 1; x <= LOGO_MAX_COORD - 1; x += LOGO_LOOP_STEP)
+    {
+        y = sin(x + M_PI_2) + LOGO_SIN_OFFSET;
+        glVertex2f(x, y);
+    }
+    glEnd();
+
+    glBegin(GL_LINE_STRIP);
+    for (x = LOGO_MIN_COORD + 1; x <= LOGO_MAX_COORD - 1; x += LOGO_LOOP_STEP)
+    {
+        y = -cos(x) + LOGO_COS_OFFSET;
+        glVertex2f(x, y);
+    }
+    glEnd();
+
+    /* Create text for logo */
+    glRasterPos2f(LOGO_TEXT_POS_X1, LOGO_TEXT_POS_Y1);
+    for (const char c : LOGO_TEXT1)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+    }
+
+    glRasterPos2f(LOGO_TEXT_POS_X2, LOGO_TEXT_POS_Y2);
+    for (const char c : LOGO_TEXT2)
+    {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+    }
 }
 
 
@@ -183,6 +234,24 @@ void displayCallback(void)
     displayLogo();
 
     glFlush();
+}
+
+
+/* Callback for 'glutReshapeFunc' */
+void reshapeCallback(int width, int height)
+{
+    if (width < WINDOW_MIN_WIDTH && height < WINDOW_MIN_HEIGHT)
+    {
+        glutReshapeWindow(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT);
+    }
+    else if (width < WINDOW_MIN_WIDTH && height >= WINDOW_MIN_HEIGHT)
+    {
+        glutReshapeWindow(WINDOW_MIN_WIDTH, height);
+    }
+    else if (width >= WINDOW_MIN_WIDTH && height < WINDOW_MIN_HEIGHT)
+    {
+        glutReshapeWindow(width, WINDOW_MIN_HEIGHT);
+    }
 }
 
 
@@ -202,6 +271,7 @@ void mouseCallback(int button, int state, int x, int y)
 void registerCallbacks(void)
 {
     glutDisplayFunc(displayCallback);
+    glutReshapeFunc(reshapeCallback);
     glutMouseFunc(mouseCallback);
 }
 
