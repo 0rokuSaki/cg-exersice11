@@ -33,7 +33,7 @@
 #define WINDOW_HEIGHT     500u         // Initial window height
 #define WINDOW_WIDTH      500u         // Initial window width
 #define WINDOW_MIN_HEIGHT 375u         // Minimal window height
-#define WINDOW_MIN_WIDTH  350u         // Minimal window width
+#define WINDOW_MIN_WIDTH  400u         // Minimal window width
 #define WINDOW_TITLE    "CG Maman 11"  // Window title
 
 /* Exit button constants */
@@ -56,7 +56,7 @@
 #define TITLE_FRAME_WIDTH  3.0f                    // Title frame width
 
 /* Logo constants */
-#define LOGO_WIDTH        280u
+#define LOGO_WIDTH        325u
 #define LOGO_HEIGHT       200u
 #define LOGO_MIN_COORD   -5.0f
 #define LOGO_MAX_COORD    5.0f
@@ -68,11 +68,11 @@
 #define LOGO_LOOP_STEP    0.1f
 #define LOGO_SIN_OFFSET   3.6f
 #define LOGO_COS_OFFSET  -3.6f
-#define LOGO_TEXT1        "The Open University"
-#define LOGO_TEXT2        "of Israel"
+#define LOGO_TEXT1        "The Open University of Israel"
+#define LOGO_TEXT2        "20562 - Computer Graphics"
 #define LOGO_TEXT_POS_X1  -3.75f
 #define LOGO_TEXT_POS_Y1   0.75f
-#define LOGO_TEXT_POS_X2  -1.5f
+#define LOGO_TEXT_POS_X2  -3.6f
 #define LOGO_TEXT_POS_Y2  -1.25f
 
 
@@ -212,13 +212,13 @@ void displayLogo(void)
     glRasterPos2f(LOGO_TEXT_POS_X1, LOGO_TEXT_POS_Y1);
     for (const char c : LOGO_TEXT1)
     {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
     }
 
     glRasterPos2f(LOGO_TEXT_POS_X2, LOGO_TEXT_POS_Y2);
     for (const char c : LOGO_TEXT2)
     {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
     }
 }
 
