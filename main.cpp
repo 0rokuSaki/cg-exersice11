@@ -260,7 +260,7 @@ void mouseCallback(int button, int state, int x, int y)
 {
     /* Exit program if right click on exit button */
     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN &&
-        x < EXIT_BTN_WIDTH && y >= glutGet(GLUT_WINDOW_HEIGHT) - EXIT_BTN_HEIGHT)
+        x < EXIT_BTN_WIDTH && y >= glutGet(GLUT_WINDOW_HEIGHT) - (int)EXIT_BTN_HEIGHT)
     {
         exit(0);
     }
