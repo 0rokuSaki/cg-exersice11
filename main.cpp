@@ -3,6 +3,7 @@
  * \brief  My solution for exersice ('Maman') 11 in Computer Graphics (20562) course
  * 
  * This program creates an ugly logo for the Open University of Israel.
+ * Repo link: https://github.com/0rokuSaki/cg-exersice11
  * 
  * *** BUILD INSTRUCTIONS (VS2022, Windows 11) ***
  * 1. Setup OpenGL: https://www.geeksforgeeks.org/how-to-setup-opengl-with-visual-studio-2019-on-windows-10/.
